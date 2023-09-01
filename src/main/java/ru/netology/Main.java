@@ -1,5 +1,6 @@
 package ru.netology;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -32,20 +33,24 @@ public class Main {
         }
     }
 
-    private static void zipFiles(String address, List<String> files) {
-        for (int i=0; i< files.size();i++) {
-            try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(address));
-                 FileInputStream fis = new FileInputStream(files.get(i))) {
-                ZipEntry entry = new ZipEntry(files.get(i));
-                zout.putNextEntry(entry);
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);
-                zout.write(buffer);
-                zout.closeEntry();
 
-            } catch (Exception ex){
-                System.out.println(ex.getMessage());
+    private static void zipFiles(String archivePath, List<String> filesPath) {
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(archivePath))) {
+            for (int i = 0; i < filesPath.size(); i++) {
+                try (FileInputStream fis = new FileInputStream(filesPath.get(i))) {
+                    File file = new File (filesPath.get(i));
+                    ZipEntry entry = new ZipEntry(file.getName());
+                    zout.putNextEntry(entry);
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);
+                    zout.write(buffer);
+                    zout.closeEntry();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
-}
+    }
 }
